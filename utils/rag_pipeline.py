@@ -1,6 +1,5 @@
 import os
 from dotenv import load_dotenv
-from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_groq import ChatGroq
 from langchain_chroma import Chroma
 from langchain_community.document_loaders import PyPDFLoader, TextLoader
@@ -31,17 +30,14 @@ _vectordb = None
 
 
 def get_embeddings():
-    """Load local HuggingFace embedding model"""
+    """Use ChromaDB's default embeddings (built-in, no API key needed)"""
     global _embeddings
 
     if _embeddings is None:
-        print("[Init] Loading HuggingFace Embeddings...")
-
-        _embeddings = HuggingFaceEmbeddings(
-            model_name="sentence-transformers/all-MiniLM-L6-v2"
-        )
-
-        print("[Init] ✅ Embeddings loaded")
+        print("[Init] Loading ChromaDB Default Embeddings...")
+        # ChromaDB uses sentence-transformers internally - it's already a dependency!
+        _embeddings = None  # Use default
+        print("[Init] ✅ Embeddings ready (using ChromaDB default)")
 
     return _embeddings
 
@@ -71,12 +67,11 @@ def get_vectorstore():
         print("[Init] Loading ChromaDB...")
         _vectordb = Chroma(
             collection_name=COLLECTION_NAME,
-            embedding_function=get_embeddings(),
             persist_directory=CHROMA_DIR
+            # Removed embedding_function - uses ChromaDB default
         )
         print("[Init] ✅ ChromaDB loaded")
     return _vectordb
-
 
 # -----------------------------------
 # Document Loading & Ingestion
