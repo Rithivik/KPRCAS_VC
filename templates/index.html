@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KPRCAS Virtual Chatbot</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="chat-container">
+  <div class="chat-header">
+    <img src="{{ url_for('static', filename='kprcas_logo.png') }}" class="avatar" alt="KPRCAS Logo">
+    <div class="header-info">
+      <h1>KPRCAS VC <span class="online-dot"></span></h1>
+      <p>KPR College Virtual Assistant · Online</p>
+    </div>
+  </div>
+
+  <div class="chat-window" id="chatWindow">
+    <div class="watermark">
+      <img src="{{ url_for('static', filename='kprcas_logo.png') }}" alt="KPRCAS Watermark">
+    </div>
+    <div class="message bot">
+      <img src="{{ url_for('static', filename='kprcas_logo.png') }}" class="avatar-small" alt="KPRCAS Logo">
+      <div class="bubble-wrap">
+        <div class="bubble">Hi! I'm KPRCAS VC, your virtual assistant at KPR College of Arts Science and Research 🎓 Ask me about admissions, programs, campus, or anything else!</div>
+        <span class="timestamp">Just now</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="quick-replies" id="quickReplies">
+    <button class="chip">Programs offered</button>
+    <button class="chip">Admissions process</button>
+    <button class="chip">Campus facilities</button>
+  </div>
+
+  <div class="chat-input-area">
+    <input type="text" id="userInput" placeholder="Type a message..." autocomplete="off">
+    <button id="sendBtn" aria-label="Send">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="white"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
