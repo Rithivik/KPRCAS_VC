@@ -120,7 +120,7 @@ def query():
 
 
 # Run auto-ingest once when the module loads
-auto_ingest_startup()
+# auto_ingest_startup()
 
 
 if __name__ == "__main__":
