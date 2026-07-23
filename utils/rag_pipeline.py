@@ -128,38 +128,44 @@ KPRCAS answer:""")
 # -----------------------------------
 def answer_query(question, k=4):
     """Answer a question using RAG with caching for efficiency"""
-    
-    # Get cached instances (no re-initialization!)
-    vectordb = get_vectorstore()
-    retriever = vectordb.as_retriever(search_kwargs={"k": k})
-    
-    # Define format function
-    def format_docs(docs):
-        return "\n\n".join(doc.page_content for doc in docs)
-    
-    # Build optimized chain
-    qa_chain = RunnableParallel(
-        answer=(
-            {"context": retriever | format_docs, "input": RunnablePassthrough()}
-            | KPRCAS_PROMPT
-            | get_llm()
-            | StrOutputParser()
-        ),
-        context=retriever
-    )
-    
-    # Get answer
-    result = qa_chain.invoke(question)
-    
-    # Extract sources
-    sources = []
-    for doc in result.get("context", []):
-        sources.append({
-            "source": doc.metadata.get("source", "unknown"),
-            "page": doc.metadata.get("page", None)
-        })
-    
-    return {
-        "answer": result["answer"],
-        "sources": sources
-    }
+    try:
+        # Get cached instances
+        vectordb = get_vectorstore()
+        retriever = vectordb.as_retriever(search_kwargs={"k": k})
+        
+        # Define format function
+        def format_docs(docs):
+            return "\n\n".join(doc.page_content for doc in docs)
+        
+        # Build chain
+        qa_chain = RunnableParallel(
+            answer=(
+                {"context": retriever | format_docs, "input": RunnablePassthrough()}
+                | KPRCAS_PROMPT
+                | get_llm()
+                | StrOutputParser()
+            ),
+            context=retriever
+        )
+        
+        # Get answer with timeout
+        result = qa_chain.invoke(question)
+        
+        # Extract sources
+        sources = []
+        for doc in result.get("context", []):
+            sources.append({
+                "source": doc.metadata.get("source", "unknown"),
+                "page": doc.metadata.get("page", None)
+            })
+        
+        return {
+            "answer": result["answer"],
+            "sources": sources
+        }
+    except Exception as e:
+        print(f"[Error] Query failed: {e}")
+        return {
+            "answer": "Sorry, I encountered an error processing your question. Please try again.",
+            "sources": []
+        }
